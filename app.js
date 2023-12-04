@@ -1,10 +1,11 @@
 addEventListener("DOMContentLoaded", function(){
     const box=document.querySelector(".box");
     const screen=document.querySelector(".screen");
-    let width=10
-    let bombAmount=10
-    let isGameOver=false
-    let tiles=[]
+    let width=10;
+    let bombAmount=10;
+    let isGameOver=false;
+    let tiles=[];
+    let flags=0;
 
     function createBoard(){
         let bombsArray=Array(bombAmount).fill('bomb');
@@ -33,10 +34,61 @@ addEventListener("DOMContentLoaded", function(){
                 addFlag(tile);
             }
         }
+        for(let i=0;i<tiles.length;i++){
+            let total=0;
+            const isLeftEdge=(i%width===0);
+            const isRightEdge=(i%width===width-1);
+            if(tiles[i].classList.contains('clear')){
+                if(i>0 && !isLeftEdge && tiles[i-1].classList.contains('bomb')) total++;
+                if(i>9 && !isRightEdge && tiles[i+1 -width].classList.contains('bomb')) total++;
+                if(i>10 && tiles[i-width].classList.contains('bomb')) total++;
+                if(i>11 && !isLeftEdge && tiles[i-1 -width].classList.contains('bombs')) total++;
+                if(i<99 && !isRightEdge && tiles[i+1].classList.contains('bomb')) total++;
+                if(i<90 && !isLeftEdge && tiles[i-1 +width].classList.contains('bomb')) total++;
+                if(i<88 && !isRightEdge && tiles[i+1 +width].classList.contains('bomb')) total++;
+                if(i<89 && tiles[i+width].classList.contains('bomb')) total++;
+                tiles[i].setAttribute('data', total);
+            }
+        }
 
     }
 
 
 
     createBoard();
-})
+    
+    function click(){}
+
+    function addFlag(tile){
+        if(isGameOver) return;
+        if(!tile.classList.contains('checked') && (flags<bombAmount)){
+            if(!tile.classList.contains('flag')){
+                tile.classList.add('flag');
+                tile.innerHTML="🚩";
+                flags++;
+            }else{
+                tile.classList.remove('flags');
+                tile.innerHTML=""
+                flags--;
+            }
+            screen.innerHTML=flags+" flaggor av "+bombAmount;
+
+        }
+
+    }
+
+    function gameOver(tile){
+        //visa alla bomber
+        tiles.forEach(tile =>{
+            if(tile.classList.contains('bomb')){
+                tile.innerHTML="💣";
+            }
+        })
+        tile.innerHTML="💥";
+        screen.innerHTML="Fillty monkey!";
+        isGameOver=true;
+    }
+
+    }
+
+)
